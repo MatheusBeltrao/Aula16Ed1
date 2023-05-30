@@ -1,0 +1,97 @@
+import java.util.ArrayDeque;
+import java.util.Deque;
+import java.util.Random;
+
+class Pessoa implements Comparable<Pessoa> {
+    int ID;
+    String sexo;
+    int idade;
+    char gestante;
+    char lactante;
+    char necessidadeEspecial;
+    int prioridade;
+
+    public Pessoa(int ID, String sexo, int idade, char gestante, char lactante, char necessidadeEspecial, int prioridade) {
+        this.ID = ID;
+        this.sexo = sexo;
+        this.idade = idade;
+        this.gestante = gestante;
+        this.lactante = lactante;
+        this.necessidadeEspecial = necessidadeEspecial;
+        this.prioridade = prioridade;
+    }
+
+    public int compareTo(Pessoa outraPessoa) {
+        return Integer.compare(this.prioridade, outraPessoa.prioridade);
+    }
+
+    public String toString() {
+        return "Pessoa(ID=" + ID + ", sexo=" + sexo + ", idade=" + idade + ", gestante=" + gestante +
+                ", lactante=" + lactante + ", necessidadeEspecial=" + necessidadeEspecial + ", prioridade=" + prioridade + ")";
+    }
+}
+
+public class Postinho {
+    public static void main(String[] args) {
+        Deque<Pessoa> filaAtendimento = new ArrayDeque<>();
+        int pessoasAtendidas = 0;
+
+        while (pessoasAtendidas < 100) {
+            int grupo = pessoasAtendidas / 10 + 1;
+
+            int necessidadeEspecial = grupo >= 1 ? 1 : 0;
+            int gestante = grupo >= 1 ? 1 : 0;
+            int lactante = grupo >= 1 ? 1 : 0;
+            int acima60 = grupo >= 3 ? 3 : grupo - 1;
+            int normal = 10 - (necessidadeEspecial + gestante + lactante + acima60);
+
+            for (int i = 0; i < necessidadeEspecial; i++) {
+                filaAtendimento.addLast(criarPessoa('s', 'n', 'n', 2));
+                pessoasAtendidas++;
+            }
+
+            for (int i = 0; i < gestante; i++) {
+                filaAtendimento.addLast(criarPessoa('n', 's', 'n', 3));
+                pessoasAtendidas++;
+            }
+
+            for (int i = 0; i < lactante; i++) {
+                filaAtendimento.addLast(criarPessoa('n', 'n', 's', 3));
+                pessoasAtendidas++;
+            }
+
+            for (int i = 0; i < acima60; i++) {
+                filaAtendimento.addLast(criarPessoa('n', 'n', 'n', 1));
+                pessoasAtendidas++;
+            }
+
+            for (int i = 0; i < normal; i++) {
+                filaAtendimento.addLast(criarPessoa('n', 'n', 'n', 0));
+                pessoasAtendidas++;
+            }
+        }
+
+        int atendidos = 0;
+        while (!filaAtendimento.isEmpty() && atendidos < 100) {
+            Pessoa pessoa = filaAtendimento.pollFirst();
+            System.out.println(pessoa);
+            atendidos++;
+        }
+
+        if (!filaAtendimento.isEmpty()) {
+            System.out.println("\nPessoas não atendidas:");
+            for (Pessoa pessoa : filaAtendimento) {
+                System.out.println(pessoa);
+            }
+        }
+    }
+
+    public static Pessoa criarPessoa(char gestante, char lactante, char necessidadeEspecial, int prioridade) {
+        Random random = new Random();
+        int ID = random.nextInt(1000) + 1;
+        String sexo = random.nextBoolean() ? "M" : "F";
+        int idade = random.nextInt(100) + 1;
+
+        return new Pessoa(ID, sexo, idade, gestante, lactante, necessidadeEspecial, prioridade);
+    }
+}
